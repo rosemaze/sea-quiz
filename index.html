@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Malaysia &amp; Singapore Quiz</title>
+    <style>
+      :root {
+        --bg: #fdf6ec;
+        --card: #ffffff;
+        --ink: #1f2933;
+        --muted: #6b7280;
+        --accent: #c8102e;
+        --accent-dark: #9b0c23;
+        --line: #e5dccb;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        line-height: 1.5;
+      }
+      main {
+        width: 100%;
+        max-width: 680px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 8px 24px rgba(31, 41, 51, 0.08);
+      }
+      .progress {
+        height: 6px;
+        background: var(--line);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+      .progress > div {
+        height: 100%;
+        background: var(--accent);
+      }
+      .count {
+        color: var(--muted);
+        font-size: 0.875rem;
+        margin: 0 0 32px;
+      }
+      h1 {
+        font-size: 1.6rem;
+        line-height: 1.4;
+        margin: 0 0 16px;
+      }
+      .choices {
+        list-style: none;
+        margin: 24px 0 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+      }
+      .choices button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        color: inherit;
+        font: inherit;
+        font-size: 1.1rem;
+        text-align: left;
+        cursor: pointer;
+      }
+      .choices button:hover:not(:disabled) {
+        border-color: var(--accent);
+        background: #fbe9ec;
+      }
+      .choices button:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+      }
+      .choices button:disabled {
+        cursor: default;
+        color: inherit;
+      }
+      .choices button.correct {
+        border-color: #15803d;
+        background: #dcfce7;
+      }
+      .choices button.correct .letter {
+        background: #15803d;
+      }
+      .choices button.wrong {
+        border-color: #b91c1c;
+        background: #fee2e2;
+        opacity: 0.8;
+      }
+      .choices button.wrong .letter {
+        background: #b91c1c;
+      }
+      .reveal {
+        margin: 24px 0 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 16px;
+      }
+      .reveal figure {
+        margin: 0;
+      }
+      .reveal img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+      .reveal figure.portrait {
+        max-width: 360px;
+      }
+      .reveal figure.portrait img {
+        aspect-ratio: auto;
+        height: auto;
+        max-height: 480px;
+        object-fit: contain;
+        background: var(--line);
+      }
+      .reveal figure.portrait.large {
+        max-width: 640px;
+      }
+      .reveal figure.portrait.large img {
+        max-height: 640px;
+      }
+      .reveal figcaption {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .reveal .missing {
+        padding: 32px 16px;
+        border: 2px dashed var(--line);
+        border-radius: 12px;
+        color: var(--muted);
+        text-align: center;
+      }
+      .question-image {
+        display: block;
+        width: 100%;
+        max-height: 420px;
+        object-fit: contain;
+        margin-top: 8px;
+        border-radius: 12px;
+      }
+      .answer-form {
+        margin-top: 24px;
+      }
+      .answer-form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+      .answer-row {
+        display: flex;
+        gap: 12px;
+      }
+      .answer-row input {
+        flex: 1;
+        min-width: 0;
+        padding: 12px 14px;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        font: inherit;
+        font-size: 1.1rem;
+      }
+      .answer-row input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .answer-row button {
+        cursor: pointer;
+      }
+      .answer-row button:disabled,
+      .answer-row input:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .show-answer {
+        margin-top: 24px;
+      }
+      .correct-title {
+        color: #15803d;
+      }
+      .feedback {
+        min-height: 1.5em;
+        margin: 16px 0 0;
+        font-weight: 600;
+      }
+      .feedback.correct {
+        color: #15803d;
+      }
+      .feedback.wrong {
+        color: #b91c1c;
+      }
+      .choices .letter {
+        flex: none;
+        width: 1.9em;
+        height: 1.9em;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 40px;
+      }
+      .btn {
+        font: inherit;
+        font-weight: 600;
+        padding: 12px 22px;
+        border-radius: 10px;
+        border: 2px solid var(--accent);
+        background: var(--accent);
+        color: #fff;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn:hover {
+        background: var(--accent-dark);
+        border-color: var(--accent-dark);
+      }
+      .btn.secondary {
+        background: transparent;
+        color: var(--accent);
+      }
+      .btn.secondary:hover {
+        background: #fbe9ec;
+      }
+      .btn:focus-visible {
+        outline: 3px solid #1d4ed8;
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app"></main>
+
+    <script>
+      const QUESTIONS = [
+        {
+          category: "Geography",
+          question: "On which continent are Singapore and Malaysia located?",
+          image: {
+            src: "images/malaysiasingaporemap.jpg",
+            alt: "Map showing Malaysia and Singapore",
+          },
+          answer: ["Asia", "South east asia"],
+        },
+        {
+          category: "Nature",
+          question: "Which primate is only found in Malaysia and Indonesia?",
+          reveal: {
+            images: [
+              {
+                image: "images/orangutan.webp",
+                alt: "An orangutan",
+                caption: "Orangutan",
+              },
+            ],
+          },
+          answer: ["Orangutan"],
+        },
+        {
+          category: "Geography",
+          question: "How many colors does the Singaporean flag have?",
+          reveal: {
+            images: [
+              {
+                image: "images/singaporeflag.webp",
+                alt: "The flag of Singapore",
+                caption: "Flag of Singapore",
+              },
+            ],
+          },
+          answer: ["2", "Two"],
+        },
+        {
+          category: "Geography",
+          question: "How many colors does the Malaysian flag have?",
+          reveal: {
+            images: [
+              {
+                image: "images/malaysiaflag.webp",
+                alt: "The flag of Malaysia",
+                caption: "Flag of Malaysia",
+              },
+            ],
+          },
+          answer: ["Four", "4"],
+        },
+        {
+          question: "What is the national flower of Singapore?",
+          category: "Geography",
+          reveal: {
+            images: [
+              {
+                image: "images/orchidsingapore.jpeg",
+                alt: "An orchid, the national flower of Singapore",
+                caption: "Orchid",
+              },
+            ],
+          },
+          choices: {
+            a: "Jasmine",
+            b: "Orchid",
+            c: "Rose",
+            d: "Tiger lily",
+          },
+          answer: ["Orchid"],
+        },
+        {
+          question: "What is the national flower of Malaysia?",
+          category: "Geography",
+          reveal: {
+            images: [
+              {
+                image: "images/hibiscusmalaysia.jpeg",
+                alt: "A hibiscus, the national flower of Malaysia",
+                caption: "Hibiscus",
+              },
+            ],
+          },
+          choices: {
+            a: "Hibiscus",
+            b: "Lotus",
+            c: "Bird of paradise",
+            d: "Chrysanthemum",
+          },
+          answer: "a",
+        },
+        {
+          question:
+            "What animal can be found on the passport cover of Malaysia?",
+          category: "Geography",
+          reveal: {
+            images: [
+              {
+                image: "images/malaysiapassport.png",
+                alt: "The cover of a Malaysian passport",
+                caption: "Malaysian passport",
+              },
+            ],
+          },
+          answer: ["Tiger"],
+        },
+        {
+          question:
+            "Which ranking does the Singaporean passport have on the Henley Passport Index?",
+          category: "Geography",
+          reveal: {
+            images: [
+              {
+                image: "images/passportrankings.jpeg",
+                alt: "Henley Passport Index rankings",
+                caption: "Henley Passport Index",
+                portrait: true,
+              },
+            ],
+          },
+          answer: [
+            "1st place",
+            "1",
+            1,
+            "first",
+            "First place",
+            "Number 1",
+            "No. 1",
+            "No 1",
+          ],
+        },
+        {
+          question:
+            "The biggest flower in the world that gives out a pungent smell like rotting flesh can be found on Borneo - what is the name of this flower?",
+          answer: "Rafflesia",
+          category: "Nature",
+          reveal: {
+            images: [
+              {
+                image: "images/rafflesia.avif",
+                alt: "A Rafflesia arnoldii flower in bloom",
+                caption: "Rafflesia arnoldii",
+              },
+            ],
+          },
+          choices: {
+            a: "Amorphophallus titanum",
+            b: "Rafflesia arnoldii",
+            c: "Megaflora monstrous",
+            d: "Trallalero tranini",
+          },
+          answer: "b",
+        },
+        {
+          question:
+            "Borneo is the only island in the world to have three countries on the same island - name the three countries",
+          choices: {
+            a: "Malaysia, Indonesia and Philippines",
+            b: "Singapore, Malaysia and Indonesia",
+            c: "Malaysia, Indonesia and Brunei",
+            d: "Thailand, Malaysia and Indonesia",
+          },
+          answer: "c",
+          category: "Geography",
+          reveal: {
+            images: [
+              {
+                image: "images/borneomap.webp",
+                alt: "Map of Borneo showing its three countries",
+                caption: "Borneo",
+                portrait: true,
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Singaporeans have the fastest walking pace in the world - what is their average walking speed?",
+          choices: {
+            a: "> 1.5 kmh",
+            b: "> 3.5 kmh",
+            c: "> 6 kmh",
+            d: "> 15 kmh",
+          },
+          answer: "c",
+          category: "Culture",
+          reveal: {
+            images: [
+              {
+                image: "images/singaporeanwalking.jpeg",
+                alt: "Singaporeans walking",
+                caption: "Singaporeans walking",
+                portrait: true,
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Singapore is one of three nation states in the world, name one of the two other states",
+          answer: ["Vatican City", "Monaco", "Vatican"],
+          category: "Geography",
+          reveal: {
+            images: [
+              {
+                image: "images/singaporecitystate.jpg",
+                alt: "Singapore city state",
+                caption: "Singapore",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Mount Kinabalu is one of the highest mountains in SEA, how high is it?",
+          choices: {
+            a: "3206 meters",
+            b: "4095 meters",
+            c: "4480 meters",
+            d: "2187 meters",
+          },
+          answer: "b",
+          category: "Geography",
+          reveal: {
+            images: [
+              {
+                image: "images/kinabalu.jpeg",
+                alt: "Mount Kinabalu",
+                caption: "Mount Kinabalu",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Given that most Malaysians and Singaporeans are multilingual, which of the following languages is NOT widely spoken in Malaysia or Singapore?",
+          choices: {
+            a: "Chinese",
+            b: "Malay",
+            c: "Portuguese",
+            d: "English",
+            e: "Tamil",
+          },
+          answer: "c",
+          category: "Culture",
+          reveal: {
+            images: [
+              {
+                image: "images/multilingual.webp",
+                alt: "Languages spoken in Malaysia and Singapore",
+                caption: "Languages of Malaysia and Singapore",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Approximately how old is the Malaysian rainforest (such as the ancient Taman Negara), making it significantly older than the Amazon basin?",
+          choices: {
+            a: "5 million years old",
+            b: "30 million years old",
+            c: "130 million years old",
+            d: "500,000 years old",
+          },
+          answer: "c",
+          category: "Nature",
+          reveal: {
+            images: [
+              {
+                image: "images/rainforest.jpg",
+                alt: "Malaysian rainforest",
+                caption: "Malaysian rainforest",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Which global maritime chokepoint carries roughly 25% to 30% of all global traded goods and handles more than 23 million barrels of oil per day, functioning as the primary lifeline connecting Middle Eastern energy and European trade to East Asian economies?",
+          choices: {
+            a: "Panama Canal",
+            b: "Strait of Hormuz",
+            c: "Suez Canal",
+            d: "Strait of Malacca",
+          },
+          answer: "d",
+          category: "Geography",
+          reveal: {
+            images: [
+              {
+                image: "images/malaccastrait.jpeg",
+                alt: "Map of the Strait of Malacca",
+                caption: "Strait of Malacca",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Under Singapore's Misuse of Drugs Act, what is the weight threshold at which trafficking, importing, or exporting cannabis carries a mandatory death penalty?",
+          choices: { a: "50 grams", b: "200 grams", c: "500 grams", d: "1 kg" },
+          answer: "c",
+          category: "General knowledge",
+          reveal: {
+            images: [
+              {
+                image: "images/drugtrafficking.jpeg",
+                alt: "Drug trafficking warning",
+                caption: "Drug trafficking penalty",
+                portrait: true,
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Which popular sweet is banned in Singapore to prevent litter and protect public infrastructure?",
+          choices: {
+            a: "Marshmallows",
+            b: "Liquorice",
+            c: "Jelly beans",
+            d: "Chewing gum",
+          },
+          answer: "d",
+          category: "General knowledge",
+          reveal: {
+            images: [
+              {
+                image: "images/chewinggum.jpeg",
+                alt: "Chewing gum",
+                caption: "Chewing gum",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            'Widely celebrated as the "Food Capital of Malaysia," which vibrant island destination is routinely named by international food critics as one of the absolute top street food hotspots on the planet?',
+          choices: { a: "Phuket", b: "Penang", c: "Langkawi", d: "Bali" },
+          answer: "b",
+          category: "Food",
+          reveal: {
+            images: [
+              {
+                image: "images/penang-food-collage.jpg",
+                alt: "Collage of Penang street food",
+                caption: "Penang street food",
+                portrait: true,
+                large: true,
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "While Malaysia and Singapore frequently debate the origins of several famous local foods, which of these dishes is NOT claimed as a national dish by either country?",
+          choices: {
+            a: "Pad Thai",
+            b: "Beef Rendang",
+            c: "Nasi Lemak",
+            d: "Hainanese chicken rice",
+          },
+          reveal: {
+            images: [
+              {
+                image: "images/nasilemak.jpeg",
+                alt: "A plate of nasi lemak",
+                caption: "Nasi lemak",
+              },
+              {
+                image: "images/rendang.jpeg",
+                alt: "A dish of beef rendang",
+                caption: "Beef rendang",
+              },
+              {
+                image: "images/chickenrice.jpeg",
+                alt: "A plate of Hainanese chicken rice",
+                caption: "Chicken rice",
+              },
+            ],
+          },
+          answer: "a",
+          category: "Food",
+        },
+        {
+          question:
+            "Laksa trivia: laksa is different in every state in Malaysia and in Singapore. If you order Singapore Laksa, what do you get?",
+          reveal: {
+            images: [
+              {
+                image: "images/singaporelaksa.jpeg",
+                alt: "A bowl of Singapore laksa",
+                caption: "Singapore laksa",
+              },
+            ],
+          },
+          choices: {
+            a: "Sweet and sour sauce and rice",
+            b: "Coconut based curry and yellow wheat noodles or rice noodles",
+            c: "Sour tamarind and fish broth and thick rice noodles",
+            d: "Beef broth, bean sprouts and flat rice noodles",
+          },
+          answer: "b",
+          category: "Food",
+        },
+        {
+          question:
+            "Laksa trivia: laksa is different in every state in Malaysia and in Singapore. If you order Penang Laksa, what do you get?",
+          reveal: {
+            images: [
+              {
+                image: "images/penangasamlaksa.jpeg",
+                alt: "A bowl of Penang asam laksa",
+                caption: "Penang asam laksa",
+              },
+            ],
+          },
+          choices: {
+            a: "Sweet and sour sauce and rice",
+            b: "Coconut based curry and yellow wheat noodles or rice noodles",
+            c: "Sour tamarind and fish broth and thick rice noodles",
+            d: "Beef broth, bean sprouts and flat rice noodles",
+          },
+          answer: "c",
+          category: "Food",
+        },
+        {
+          question:
+            "How many tigers are estimated to be left in the wild in Malaysia",
+          choices: {
+            a: "less than 150",
+            b: "less than 3000",
+            c: "more than 2000",
+            d: "less than 50",
+          },
+          answer: "a",
+          category: "Nature",
+          reveal: {
+            images: [
+              {
+                image: "images/malayantiger.jpeg",
+                alt: "A Malayan tiger",
+                caption: "Malayan tiger",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Which animal is most commonly sighted roaming the urban waterways, reservoirs, and even walking paths of Singapore?",
+          choices: { a: "Crocodile", b: "Monkey", c: "Seal", d: "Otter" },
+          answer: "d",
+          category:"Nature",
+          reveal: {
+            images: [
+              {
+                image: "images/ottersingapore.jpeg",
+                alt: "An otter in Singapore",
+                caption: "Singapore otter",
+              },
+              {
+                image: "images/ottersingapore2.jpg",
+                alt: "Otters in Singapore",
+                caption: "Singapore otters",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Which of the following is not a national holiday in Malaysia and Singapore?",
+          choices: {
+            a: "Christmas",
+            b: "Chinese New Year",
+            c: "Eid",
+            d: "Ascension Day",
+          },
+          answer: "a",
+        },
+        {
+          question:
+            "Which spectacular religious festival features millions of lights, colorful traditional outfits, and delicious spicy treats, and is celebrated as a national public holiday by communities in both Malaysia and Singapore?",
+          choices: {
+            a: "St Patrick's Day",
+            b: "Diwali (Deepavali)",
+            c: "Oktoberfest",
+            d: "Mooncake festival",
+          },
+          answer: "b",
+          category: "Culture",
+          reveal: {
+            images: [
+              {
+                image: "images/deepavali.jpeg",
+                alt: "Deepavali celebrations",
+                caption: "Deepavali",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Which world-famous architectural landmark in Kuala Lumpur, Malaysia, features a spectacular double-decker Skybridge connecting two massive towers on the 41st and 42nd floors?",
+          choices: {
+            a: "Burj Khalifa",
+            b: "Taipei 101",
+            c: "Petronas Twin Towers",
+            d: "Marina Bay Sands",
+          },
+          answer: "c",
+          category: "General knowledge",
+        },
+        {
+          question:
+            "What is the official name of the world's tallest indoor waterfall, which serves as the stunning centerpiece of Jewel Changi Airport?",
+          answer: "b",
+          choices: {
+            a: "The Jewel Cascade",
+            b: "The HSBC Rain Vortex",
+            c: "The Singapore Changi Falls",
+            d: "The Shiseido Forest Waterfall",
+          },
+          reveal: {
+            images: [
+              {
+                image: "images/changiairportwaterfall.jpeg",
+                alt: "The indoor waterfall at Jewel Changi Airport",
+                caption: "The HSBC Rain Vortex, Jewel Changi Airport",
+              },
+            ],
+          },
+        },
+      ];
+
+      const app = document.getElementById("app");
+      const total = QUESTIONS.length;
+      const esc = (s) =>
+        s.replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+
+      function renderStart() {
+        app.innerHTML = `
+                         <h1>Malaysia &amp; Singapore Quiz</h1>
+                         <p>${total} questions, one per page.</p>
+                         <a class="btn" href="#/q/1">Start</a>`;
+        document.title = "Malaysia & Singapore Quiz";
+      }
+
+      function renderChoices(choices) {
+        if (!choices) return "";
+        const items = Object.entries(choices)
+          .map(
+            ([letter, text]) =>
+              `<li><button type="button" data-letter="${esc(letter)}"><span class="letter" aria-hidden="true">${esc(letter)}</span><span>${esc(text)}</span></button></li>`,
+          )
+          .join("");
+        return `<ul class="choices" aria-label="Answer choices">${items}</ul>
+                <p id="feedback" class="feedback" role="status"></p>`;
+      }
+
+      function renderReveal(n) {
+        const { choices, answer, reveal } = QUESTIONS[n - 1];
+        const isLast = n === total;
+        app.innerHTML = `
+                         <p class="count">Question ${n} of ${total}</p>
+                         <h1 class="correct-title">${choices ? "Correct!" : "Answer"}</h1>
+                         <p>The answer is ${esc(choices ? `${answer.toUpperCase()}: ${choices[answer]}` : [answer].flat()[0])}</p>
+                         <div class="reveal">
+                           ${reveal.images
+                             .map(
+                               ({ image, alt, caption, portrait, large }) => `
+                           <figure class="${[portrait && "portrait", large && "large"].filter(Boolean).join(" ")}">
+                             <img src="${esc(image)}" alt="${esc(alt)}" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+                             <p class="missing" hidden>Add the photo at ${esc(image)} to show it here.</p>
+                             <figcaption>${esc(caption)}</figcaption>
+                           </figure>`,
+                             )
+                             .join("")}
+                         </div>
+                         <div class="nav">
+                           <a class="btn secondary" href="#/q/${n}">Back to question</a>
+                           ${isLast ? `<a class="btn" href="#/">Done</a>` : `<a class="btn" href="#/q/${n + 1}">Next</a>`}
+                         </div>`;
+        document.title = `Question ${n} answer`;
+      }
+
+      function wireChoices(n, choices, answer, reveal) {
+        const list = document.querySelector(".choices");
+        if (!list) return;
+        const feedback = document.getElementById("feedback");
+        list.addEventListener("click", (e) => {
+          const button = e.target.closest("button");
+          if (!button || button.disabled) return;
+          const letter = button.dataset.letter;
+          if (letter === answer && reveal) {
+            location.hash = `#/q/${n}/answer`;
+          } else if (letter === answer) {
+            list.querySelectorAll("button").forEach((b) => (b.disabled = true));
+            button.classList.add("correct");
+            feedback.className = "feedback correct";
+            feedback.textContent = `Correct! The answer is ${letter.toUpperCase()}: ${choices[letter]}`;
+          } else {
+            button.disabled = true;
+            button.classList.add("wrong");
+            feedback.className = "feedback wrong";
+            feedback.textContent = "Not quite - try again.";
+          }
+        });
+      }
+
+      const normalize = (s) => s.trim().toLowerCase().replace(/\s+/g, " ");
+
+      function renderAnswerForm() {
+        return `<form id="answer-form" class="answer-form">
+                           <label for="answer-input">Your answer</label>
+                           <div class="answer-row">
+                             <input id="answer-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+                             <button type="submit" class="btn">Check</button>
+                           </div>
+                         </form>
+                         <p id="feedback" class="feedback" role="status"></p>`;
+      }
+
+      function wireAnswerForm(n, answers, reveal) {
+        const form = document.getElementById("answer-form");
+        const input = document.getElementById("answer-input");
+        const feedback = document.getElementById("feedback");
+        input.focus();
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const value = normalize(input.value);
+          if (!value) return;
+          if (answers.some((a) => normalize(a) === value)) {
+            if (reveal) {
+              location.hash = `#/q/${n}/answer`;
+              return;
+            }
+            input.disabled = true;
+            form.querySelector("button").disabled = true;
+            feedback.className = "feedback correct";
+            feedback.textContent = `Correct! The answer is ${answers[0]}`;
+          } else {
+            feedback.className = "feedback wrong";
+            feedback.textContent = "Not quite - try again.";
+            input.select();
+          }
+        });
+      }
+
+      function renderQuestion(n) {
+        const isLast = n === total;
+        const { question, choices, answer, reveal, image } = QUESTIONS[n - 1];
+        app.innerHTML = `
+                         <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="${total}" aria-valuenow="${n}">
+                           <div style="width:${(n / total) * 100}%"></div>
+                         </div>
+                         <p class="count">Question ${n} of ${total}</p>
+                         <h1>${esc(question)}</h1>
+                         ${image ? `<img class="question-image" src="${esc(image.src)}" alt="${esc(image.alt)}">` : ""}
+                         ${renderChoices(choices)}
+                         ${Array.isArray(answer) ? renderAnswerForm() : ""}
+                         ${reveal && !choices ? `<a class="btn show-answer" href="#/q/${n}/answer">Show answer</a>` : ""}
+                         <div class="nav">
+                           <a class="btn secondary" href="${n > 1 ? `#/q/${n - 1}` : "#/"}">${n > 1 ? "Back" : "Home"}</a>
+                           ${isLast ? `<a class="btn" href="#/">Done</a>` : `<a class="btn" href="#/q/${n + 1}">Next</a>`}
+                         </div>`;
+        document.title = `Question ${n} of ${total}`;
+        wireChoices(n, choices, answer, reveal);
+        if (Array.isArray(answer)) wireAnswerForm(n, answer, reveal);
+      }
+
+      function route() {
+        const revealMatch = location.hash.match(/^#\/q\/(\d+)\/answer$/);
+        if (revealMatch && QUESTIONS[+revealMatch[1] - 1]?.reveal)
+          return renderReveal(+revealMatch[1]);
+        const match = location.hash.match(/^#\/q\/(\d+)$/);
+        if (match && +match[1] >= 1 && +match[1] <= total)
+          return renderQuestion(+match[1]);
+        renderStart();
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        if (e.target.closest("input, textarea")) return;
+        const match = location.hash.match(/^#\/q\/(\d+)$/);
+        if (!match) return;
+        const next = +match[1] + (e.key === "ArrowRight" ? 1 : -1);
+        if (next >= 1 && next <= total) location.hash = `#/q/${next}`;
+      });
+
+      window.addEventListener("hashchange", route);
+      route();
+    </script>
+  </body>
+</html>
