@@ -42,6 +42,131 @@
         padding: 32px;
         box-shadow: 0 8px 24px rgba(31, 41, 51, 0.08);
       }
+      .menu-button {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 20;
+        font: inherit;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 10px;
+        border: 2px solid var(--accent);
+        background: var(--card);
+        color: var(--accent);
+        cursor: pointer;
+      }
+      .menu-button:hover,
+      .menu-button[aria-expanded="true"] {
+        background: #fbe9ec;
+      }
+      .menu-panel {
+        position: fixed;
+        top: 64px;
+        right: 16px;
+        z-index: 20;
+        width: min(440px, calc(100vw - 32px));
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 24px rgba(31, 41, 51, 0.16);
+      }
+      .menu-panel[hidden] {
+        display: none;
+      }
+      .menu-panel h2 {
+        font-size: 1rem;
+        margin: 0 0 8px;
+      }
+      .menu-panel ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .menu-panel a {
+        display: flex;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 8px;
+        color: inherit;
+        text-decoration: none;
+      }
+      .menu-panel a:hover,
+      .menu-panel a:focus-visible {
+        background: #fbe9ec;
+      }
+      .menu-panel a[aria-current="page"] {
+        font-weight: 600;
+        background: #fbe9ec;
+      }
+      .menu-panel .num {
+        flex: none;
+        min-width: 2ch;
+        color: var(--accent);
+        font-weight: 600;
+        text-align: right;
+      }
+      .menu-panel .text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .explanation {
+        white-space: pre-line;
+      }
+      .home-link {
+        display: inline-block;
+        margin-bottom: 16px;
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .home-link:hover {
+        text-decoration: underline;
+      }
+      .random-title {
+        font-size: 1rem;
+        margin: 32px 0 12px;
+      }
+      .categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .categories button {
+        cursor: pointer;
+      }
+      .categories button[data-color="red"] {
+        border-color: #c8102e;
+        color: #c8102e;
+      }
+      .categories button[data-color="green"] {
+        border-color: #15803d;
+        color: #15803d;
+      }
+      .categories button[data-color="yellow"] {
+        border-color: #ca8a04;
+        color: #ca8a04;
+      }
+      .categories button[data-color="blue"] {
+        border-color: #1d4ed8;
+        color: #1d4ed8;
+      }
+      .categories button[data-color="red"]:hover {
+        background: rgba(200, 16, 46, 0.12);
+      }
+      .categories button[data-color="green"]:hover {
+        background: rgba(21, 128, 61, 0.12);
+      }
+      .categories button[data-color="yellow"]:hover {
+        background: rgba(202, 138, 4, 0.12);
+      }
+      .categories button[data-color="blue"]:hover {
+        background: rgba(29, 78, 216, 0.12);
+      }
       .progress {
         height: 6px;
         background: var(--line);
@@ -54,6 +179,9 @@
         background: var(--accent);
       }
       .count {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
         color: var(--muted);
         font-size: 0.875rem;
         margin: 0 0 32px;
@@ -62,6 +190,7 @@
         font-size: 1.6rem;
         line-height: 1.4;
         margin: 0 0 16px;
+        white-space: pre-line;
       }
       .choices {
         list-style: none;
@@ -103,6 +232,13 @@
       }
       .choices button.correct .letter {
         background: #15803d;
+      }
+      .choices .note {
+        margin-left: auto;
+        padding-left: 8px;
+        white-space: nowrap;
+        font-weight: 600;
+        color: #b91c1c;
       }
       .choices button.wrong {
         border-color: #b91c1c;
@@ -262,6 +398,19 @@
     </style>
   </head>
   <body>
+    <button
+      type="button"
+      id="menu-button"
+      class="menu-button"
+      aria-expanded="false"
+      aria-controls="menu-panel"
+    >
+      &#9776; Menu
+    </button>
+    <nav id="menu-panel" class="menu-panel" aria-label="All questions" hidden>
+      <h2>All questions</h2>
+      <ol id="menu-list"></ol>
+    </nav>
     <main id="app"></main>
 
     <script>
@@ -277,7 +426,7 @@
         },
         {
           category: "Nature",
-          question: "Which primate is only found in Malaysia and Indonesia?",
+          question: "Which primate is only found in Malaysia and Indonesia? 🦧",
           reveal: {
             images: [
               {
@@ -290,12 +439,12 @@
           answer: ["Orangutan"],
         },
         {
-          category: "Geography",
+          category: "General knowledge",
           question: "How many colors does the Singaporean flag have?",
           reveal: {
             images: [
               {
-                image: "images/singaporeflag.webp",
+                image: "images/singaporeflag.jpeg",
                 alt: "The flag of Singapore",
                 caption: "Flag of Singapore",
               },
@@ -304,7 +453,7 @@
           answer: ["2", "Two"],
         },
         {
-          category: "Geography",
+          category: "General knowledge",
           question: "How many colors does the Malaysian flag have?",
           reveal: {
             images: [
@@ -312,6 +461,8 @@
                 image: "images/malaysiaflag.webp",
                 alt: "The flag of Malaysia",
                 caption: "Flag of Malaysia",
+                portrait: true,
+                large: true,
               },
             ],
           },
@@ -319,8 +470,10 @@
         },
         {
           question: "What is the national flower of Singapore?",
-          category: "Geography",
+          category: "General knowledge",
           reveal: {
+            explanation:
+              "Singapore's national flower is the Vanda Miss Joaquim (scientifically known as Papilionanthe Miss Joaquim), a striking pink and purple hybrid orchid chosen in 1981 to represent the nation’s resilience, vibrant hybrid culture, and year-round progress.",
             images: [
               {
                 image: "images/orchidsingapore.jpeg",
@@ -339,8 +492,10 @@
         },
         {
           question: "What is the national flower of Malaysia?",
-          category: "Geography",
+          category: "General knowledge",
           reveal: {
+            explanation:
+              "Malaysia's national flower is the red hibiscus, locally known as the Bunga Raya (Hibiscus rosa-sinensis), whose five vibrant petals symbolize courage and unity while perfectly mirroring the five core principles of the nation's national philosophy, the Rukun Negara",
             images: [
               {
                 image: "images/hibiscusmalaysia.jpeg",
@@ -376,8 +531,10 @@
         {
           question:
             "Which ranking does the Singaporean passport have on the Henley Passport Index?",
-          category: "Geography",
+          category: "General knowledge",
           reveal: {
+            explanation:
+              "According to the latest Henley Passport Index, the Singapore passport ranks as the most powerful in the world, granting its citizens visa-free or visa-on-arrival access to an incredible 192 global destinations.",
             images: [
               {
                 image: "images/passportrankings.jpeg",
@@ -404,6 +561,8 @@
           answer: "Rafflesia",
           category: "Nature",
           reveal: {
+            explanation:
+              "The rare **Rafflesia**, which grows on the lower slopes of Mount Kinabalu, is famously known as the world's largest individual flower and produces a strong scent of rotting meat to attract insect pollinators.",
             images: [
               {
                 image: "images/rafflesia.avif",
@@ -423,15 +582,21 @@
         {
           question:
             "Borneo is the only island in the world to have three countries on the same island - name the three countries",
+          image: {
+            src: "images/borneohighlight.png",
+            alt: "Map with the island of Borneo highlighted",
+          },
           choices: {
-            a: "Malaysia, Indonesia and Philippines",
-            b: "Singapore, Malaysia and Indonesia",
-            c: "Malaysia, Indonesia and Brunei",
-            d: "Thailand, Malaysia and Indonesia",
+            a: "Indonesia, Malaysia and Philippines",
+            b: "Indonesia, Malaysia and Singapore",
+            c: "Indonesia, Malaysia and Brunei",
+            d: "Thailand, Indonesia and Malaysia",
           },
           answer: "c",
           category: "Geography",
           reveal: {
+            explanation:
+              "Borneo is the only island in the world divided among three fully recognized sovereign nations. Those three countries are **Indonesia, Malaysia, and Brunei.**",
             images: [
               {
                 image: "images/borneomap.webp",
@@ -446,13 +611,13 @@
           question:
             "Singaporeans have the fastest walking pace in the world - what is their average walking speed?",
           choices: {
-            a: "> 1.5 kmh",
-            b: "> 3.5 kmh",
-            c: "> 6 kmh",
-            d: "> 15 kmh",
+            a: "approx. 1.5 kmh",
+            b: "approx. 3.5 kmh",
+            c: "approx. 6 kmh",
+            d: "approx. 15 kmh",
           },
           answer: "c",
-          category: "Culture",
+          category: "Culture, Food & Sports",
           reveal: {
             images: [
               {
@@ -466,15 +631,26 @@
         },
         {
           question:
-            "Singapore is one of three nation states in the world, name one of the two other states",
+            "Singapore is one of three city states in the world, name one of the two other states",
+          image: {
+            src: "images/singaporecitystate.jpg",
+            alt: "Singapore city state",
+          },
           answer: ["Vatican City", "Monaco", "Vatican"],
           category: "Geography",
           reveal: {
             images: [
               {
-                image: "images/singaporecitystate.jpg",
-                alt: "Singapore city state",
-                caption: "Singapore",
+                image: "images/monaco.jpeg",
+                alt: "Monaco",
+                caption: "Monaco",
+                portrait: true,
+              },
+              {
+                image: "images/vaticancity.jpeg",
+                alt: "Vatican City",
+                caption: "Vatican City",
+                portrait: true,
               },
             ],
           },
@@ -482,6 +658,10 @@
         {
           question:
             "Mount Kinabalu is one of the highest mountains in SEA, how high is it?",
+          image: {
+            src: "images/kinabalumap.webp",
+            alt: "Map showing the location of Mount Kinabalu",
+          },
           choices: {
             a: "3206 meters",
             b: "4095 meters",
@@ -491,6 +671,8 @@
           answer: "b",
           category: "Geography",
           reveal: {
+            explanation:
+              "At 4095 meters, Mount Kinabalu is one of the highest mountains in South East Asia.",
             images: [
               {
                 image: "images/kinabalu.jpeg",
@@ -511,8 +693,10 @@
             e: "Tamil",
           },
           answer: "c",
-          category: "Culture",
+          category: "Culture, Food & Sports",
           reveal: {
+            explanation:
+              "Although the Portuguese were the first European powers to colonise Malaysia back in the 16th century, it is NOT a common language in present day Malaysia.\nMalay is the official language, but English, Chinese and Tamil are also taught in school and widely spoken.",
             images: [
               {
                 image: "images/multilingual.webp",
@@ -525,6 +709,10 @@
         {
           question:
             "Approximately how old is the Malaysian rainforest (such as the ancient Taman Negara), making it significantly older than the Amazon basin?",
+          image: {
+            src: "images/tamannegara.jpg",
+            alt: "The rainforest of Taman Negara",
+          },
           choices: {
             a: "5 million years old",
             b: "30 million years old",
@@ -534,6 +722,8 @@
           answer: "c",
           category: "Nature",
           reveal: {
+            explanation:
+              "At 130 million to 140 million years old, the Malaysian rainforest is one of the oldest continuous tropical ecosystems on Earth, predating the Amazon by tens of millions of years.",
             images: [
               {
                 image: "images/rainforest.jpg",
@@ -555,6 +745,8 @@
           answer: "d",
           category: "Geography",
           reveal: {
+            explanation:
+              "As one of the world's most critical maritime choke points, the **Strait of Malacca** serves as the primary shipping lane connecting the Indian Ocean to the Pacific Ocean, carrying roughly one-quarter of all global seaborne trade.",
             images: [
               {
                 image: "images/malaccastrait.jpeg",
@@ -571,6 +763,8 @@
           answer: "c",
           category: "General knowledge",
           reveal: {
+            explanation:
+              "Under the Singapore Misuse of Drugs Act 1973, the weight threshold that triggers a mandatory death penalty for trafficking, importing, or exporting cannabis is more than 500 grams",
             images: [
               {
                 image: "images/drugtrafficking.jpeg",
@@ -593,6 +787,8 @@
           answer: "d",
           category: "General knowledge",
           reveal: {
+            explanation:
+              "The sale and import of regular **chewing gum** have been banned in Singapore since 1992 to keep public spaces clean and protect transit systems.",
             images: [
               {
                 image: "images/chewinggum.jpeg",
@@ -605,15 +801,22 @@
         {
           question:
             'Widely celebrated as the "Food Capital of Malaysia," which vibrant island destination is routinely named by international food critics as one of the absolute top street food hotspots on the planet?',
+          image: {
+            src: "images/penang.jpg",
+            alt: "Penang island",
+          },
           choices: { a: "Phuket", b: "Penang", c: "Langkawi", d: "Bali" },
           answer: "b",
-          category: "Food",
+          category: "Culture, Food & Sports",
           reveal: {
+            explanation:
+              "Penang hawker food is globally renowned because of its unique convergence of history, diverse cultures, and uncompromising culinary traditions.",
             images: [
               {
                 image: "images/penang-food-collage.jpg",
                 alt: "Collage of Penang street food",
-                caption: "Penang street food",
+                caption:
+                  "Penang street food. First row (l to r): Laksa, Wan tan mee and Teh ais, Nasi lemak, (second row): Char koay teow, oyster omelette, more Char koay teow, (third row): Penang prawn noodles (hokkien mee), ice kacang, cendol, oyster omelette (first picture), Rojak and laksa, Lam mee",
                 portrait: true,
                 large: true,
               },
@@ -649,11 +852,11 @@
             ],
           },
           answer: "a",
-          category: "Food",
+          category: "Culture, Food & Sports",
         },
         {
           question:
-            "Laksa trivia: laksa is different in every state in Malaysia and in Singapore. If you order Singapore Laksa, what do you get?",
+            "Laksa is different in every state in Malaysia and in Singapore.\nIf you order Singapore Laksa, what do you get?",
           reveal: {
             images: [
               {
@@ -670,11 +873,11 @@
             d: "Beef broth, bean sprouts and flat rice noodles",
           },
           answer: "b",
-          category: "Food",
+          category: "Culture, Food & Sports",
         },
         {
           question:
-            "Laksa trivia: laksa is different in every state in Malaysia and in Singapore. If you order Penang Laksa, what do you get?",
+            "Laksa is different in every state in Malaysia and in Singapore.\nIf you order Penang Laksa, what do you get?",
           reveal: {
             images: [
               {
@@ -691,11 +894,11 @@
             d: "Beef broth, bean sprouts and flat rice noodles",
           },
           answer: "c",
-          category: "Food",
+          category: "Culture, Food & Sports",
         },
         {
           question:
-            "How many tigers are estimated to be left in the wild in Malaysia",
+            "How many tigers are estimated to be left in the wild in Malaysia?",
           choices: {
             a: "less than 150",
             b: "less than 3000",
@@ -705,6 +908,9 @@
           answer: "a",
           category: "Nature",
           reveal: {
+            ending: " 😢",
+            explanation:
+              "**Less than 150** critically endangered Malayan tigers remain in the wild, a devastating drop from the estimated 3,000 that roamed the country's rainforests in the 1950s.",
             images: [
               {
                 image: "images/malayantiger.jpeg",
@@ -717,10 +923,17 @@
         {
           question:
             "Which animal is most commonly sighted roaming the urban waterways, reservoirs, and even walking paths of Singapore?",
-          choices: { a: "Crocodile", b: "Monkey", c: "Seal", d: "Otter" },
+          choices: {
+            a: "Crocodile",
+            b: "Monkey",
+            c: "Hippopotamus",
+            d: "Otter",
+          },
           answer: "d",
           category: "Nature",
           reveal: {
+            explanation:
+              "Singapore's thriving families of wild smooth-coated **otters** have become famous local celebrities, frequently seen running through urban areas, crossing busy streets, and swimming in downtown Marina Bay.",
             images: [
               {
                 image: "images/ottersingapore.jpeg",
@@ -737,11 +950,11 @@
         },
         {
           question:
-            "Which of the following is not a national holiday in Malaysia and Singapore?",
+            "Malaysia and Singapore are multi-cultural societies consisting of different races and religions.\nWhich of the following is NOT a national holiday in Malaysia and Singapore?",
           choices: {
             a: "Christmas",
             b: "Chinese New Year",
-            c: "Eid",
+            c: "Eid (Aidilfitri)",
             d: "Ascension Day",
           },
           answer: "d",
@@ -756,8 +969,10 @@
             d: "Mooncake festival",
           },
           answer: "b",
-          category: "Culture",
+          category: "Culture, Food & Sports",
           reveal: {
+            explanation:
+              "That's right! Diwali (Deepavali) is the correct answer. During this spectacular celebration, neighbourhoods like Little India in Singapore and Brickfields in Kuala Lumpur completely transform with millions of oil lamps and dazzling light displays.",
             images: [
               {
                 image: "images/deepavali.jpeg",
@@ -777,7 +992,7 @@
             d: "Marina Bay Sands",
           },
           answer: "c",
-          category: "General knowledge",
+          category: "Culture, Food & Sports",
           reveal: {
             images: [
               {
@@ -809,6 +1024,386 @@
             ],
           },
         },
+        {
+          question:
+            "Chope table!\nIn Singapore's crowded hawker centers, locals use a unique system called 'choping' to reserve a table before ordering food.\nWhich of the following everyday items is most famously used to 'chope' a table?",
+          choices: {
+            a: "A house key",
+            b: "A packet of tissue paper",
+            c: "An empty water bottle",
+            d: "A transit card (EZ-Link card)",
+          },
+          answer: "b",
+          category: "Culture, Food & Sports",
+          reveal: {
+            images: [
+              {
+                image: "images/chopetable.jpeg",
+                alt: "Packets of tissue paper reserving tables at a hawker centre",
+                caption: "Choping a table with tissue paper",
+                portrait: true,
+              },
+            ],
+          },
+          category: "Culture, Food & Sports",
+        },
+        {
+          question:
+            'Singapore\'s subway or Mass Rapid Transit (MRT) system and public buses officially ban passengers from carrying a famous Southeast Asian fruit because its intense aroma lingers in enclosed air-conditioned spaces.\nWhat is this spiky item, often nicknamed the "King of Fruits", that can carry a fine of up to S$500?',
+          choices: {
+            a: "Jackfruit",
+            b: "Durian",
+            c: "Rambutan",
+            d: "Papaya",
+          },
+          answer: "b",
+          category: "Culture, Food & Sports",
+          reveal: {
+            explanation:
+              "The **durian** is famously banned in many public places like hotels and subways due to its polarizing aroma, which has been described as a cross between gym socks, rotting onions, raw sewage and sulfur with notes of custard.",
+            images: [
+              {
+                image: "images/durian.jpeg",
+                alt: "A durian, the King of Fruits",
+                caption: "Durian, the King of Fruits",
+              },
+              {
+                image: "images/mrtbandurian.jpeg",
+                alt: "A sign banning durians on the MRT",
+                caption: "No durians allowed on the MRT",
+              },
+            ],
+          },
+          category: "General knowledge",
+        },
+        {
+          question:
+            "The Sarawak Chamber in Malaysia's Mulu National Park is so massive it holds the record for one of the largest underground chambers in the world. To put its size into perspective for a corporate team-building exercise, approximately how many Boeing 747 airplanes could fit inside it?",
+          choices: { a: "5", b: "15", c: "25", d: "40" },
+          answer: "d",
+          category: "Geography",
+          reveal: {
+            explanation:
+              "Up to **40** jumbo jets can fit simultaneously across the massive 164,000-square-meter floor.",
+            images: [
+              {
+                image: "images/mulucaves.avif",
+                alt: "Inside the Sarawak Chamber in the Mulu Caves",
+                caption: "Sarawak Chamber, Mulu Caves",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Badminton is a national obsession in Malaysia. Which of these Malaysian pairs is currently not ranked in the top 10 of the Badminton World Federation world rankings?",
+          choices: {
+            a: "Pearly Tan / M. Thinaah",
+            b: "Aaron Chia / Soh Wooi Yik",
+            c: "Chen Tang Jie / Toh Ee Wei",
+            d: "Goh Soon Huat / Shevon Jemie Lai",
+          },
+          answer: "d",
+          category: "Culture, Food & Sports",
+          notes: {
+            a: "World No. 5",
+            b: "World No. 4",
+            c: "World No. 8",
+          },
+          reveal: {
+            details: [
+              "Pearly Tan / M. Thinaah: Current World no. 5 (highest ranking no. 2)",
+              "Aaron Chia / Soh Wooi Yik: Current World no. 4 (highest ranking no. 1)",
+              "Chen Tang Jie / Toh Ee Wei: World No. 8 (highest ranking no. 3)",
+              "Goh Soon Huat / Shevon Jemie Lai: World No. 11",
+            ],
+            images: [
+              {
+                image: "images/pearlythinaah.jpeg",
+                alt: "World no 5 - Pearly Tan and M. Thinaah",
+                caption: "World no 5 - Pearly Tan / M. Thinaah",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Which of the following wild cat species is not native to Malaysia and Singapore?",
+          choices: {
+            a: "Leopard Cat",
+            b: "Malayan Tiger",
+            c: "Cheetah",
+            d: "Indochinese Leopard",
+          },
+          answer: "c",
+          category: "Nature",
+          reveal: {
+            explanation:
+              "The **cheetah** is not a native species to Malaysia/Singapore, but other wild cat species like the jet black Indochinese leopard, leopard cat, and tigers still roam in Malaysian jungles.",
+            images: [
+              {
+                image: "images/leopardcat.jpeg",
+                alt: "A leopard cat",
+                caption: "Leopard Cat",
+              },
+              {
+                image: "images/indochineseleopard.jpg",
+                alt: "An Indochinese leopard",
+                caption: "Indochinese Leopard",
+              },
+            ],
+          },
+        },
+        {
+          question: "What is this animal?!!",
+          image: {
+            src: "images/tapir.jpeg",
+            alt: "A black and white animal with a long flexible snout",
+          },
+          answer: ["Tapir", "Malayan tapir", "A tapir"],
+          category: "Nature",
+          reveal: {
+            explanation:
+              "The **Malayan Tapir** is the only species native to Asia. Instantly recognizable by its striking black-and-white tuxedo pattern, it lives in the tropical rainforests of Malaysia, Sumatra (Indonesia), Thailand, and Myanmar.",
+            images: [
+              {
+                image: "images/tapirandbaby.jpeg",
+                alt: "A Malayan tapir with its baby",
+                caption: "Malayan tapir with its baby",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "At the 2016 Rio Olympics, Joseph Schooling won a historic gold medal in the men's 100m butterfly. Which legendary American swimmer did he famously defeat to claim the top spot on the podium?",
+          choices: {
+            a: "Ryan Lochte",
+            b: "Chad le Clos",
+            c: "Michael Phelps",
+            d: "Nathan Adrian",
+          },
+          answer: "c",
+          category: "Culture, Food & Sports",
+          reveal: {
+            explanation:
+              "Schooling famously defeated his childhood idol, **Michael Phelps**, to capture Singapore's first-ever Olympic gold medal.",
+            images: [
+              {
+                image: "images/josephschooling.jpg",
+                alt: "Joseph Schooling at the 2016 Rio Olympics",
+                caption: "Joseph Schooling, 2016 Rio Olympics",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Malaysian batik is famous for a distinct production technique that allows for faster creation of repeating geometric patterns. What is this tool or method called?",
+          choices: {
+            a: "Digital screen printing",
+            b: "Block printing (Batik Blok or Batik Terap)",
+            c: "Tie-dyeing (Shibori)",
+            d: "Needlepoint embroidery",
+          },
+          answer: "b",
+          category: "Culture, Food & Sports",
+          reveal: {
+            explanation:
+              "Malaysian batik artisans frequently use hand-carved copper or wooden blocks dipped in hot wax to stamp beautiful, repetitive geometric and floral motifs directly onto the cloth.",
+            images: [
+              {
+                image: "images/batik.png",
+                alt: "A piece of Malaysian batik fabric",
+                caption: "Malaysian batik",
+                portrait: true,
+              },
+              {
+                image: "images/batikblockprinting.jpeg",
+                alt: "Stamping batik fabric with a wax-dipped block",
+                caption: "Batik block printing",
+                portrait: true,
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "After a notable nine-year absence, majestic leatherback turtles have finally returned to Malaysian beaches to lay their eggs!\nTo protect the turtles, Malaysia enforces incredibly strict wildlife protection laws. What is the penalty for anyone found possessing, selling or disturbing sea turtles or their eggs?",
+          image: {
+            src: "images/leatherbacklarge.jpeg",
+            alt: "A leatherback turtle",
+          },
+          choices: {
+            a: "Approx. €1,000 and up to 6 months of imprisonment",
+            b: "Approx. €10,000 and up to 1 year of imprisonment",
+            c: "Approx. €55,000 and up to 5 years of imprisonment",
+            d: "Approx €220,000 and up to 10 years of imprisonment",
+          },
+          answer: "c",
+          category: "Nature",
+          reveal: {
+            explanation:
+              "Leatherback turtles rely on natal homing—an extraordinary biological mechanism where females return to the exact region where they hatched decades earlier to lay their own eggs. In a monumental win for marine conservation, leatherback turtles have officially returned to Terengganu, Malaysia, in September and October 2026 after a heartbreaking nine-year total absence since 2017.\nThe amended Terengganu Turtle Enactment sets severe penalties of up to RM250,000 (about €54,300) in fines and up to 5 years of imprisonment to protect critically endangered species like the leatherback turtle.",
+            images: [
+              {
+                image: "images/leatherbackturtle.webp",
+                alt: "A leatherback turtle",
+                caption: "Leatherback turtle",
+                portrait: true,
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "What is the official name of the historic land-fill crossing connecting Woodlands in Singapore to Johor Bahru in Malaysia, and what is its approximate length?",
+          image: {
+            src: "images/causewaymap.jpeg",
+            alt: "Map showing the crossing between Woodlands and Johor Bahru",
+          },
+          choices: {
+            a: "The Straits Link - 1.92 kilometers",
+            b: "The Tebrau Viaduct - 500 meters",
+            c: "The Johor-Singapore Causeway - 1.056 kilometers",
+            d: "The Sultan Iskandar Bridge - 2.4 kilometers",
+          },
+          answer: "c",
+          category: "Geography",
+          reveal: {
+            explanation:
+              "The official name is the Johor-Singapore Causeway, and it stretches exactly 1,056 meters across the Straits of Johor.",
+            images: [
+              {
+                image: "images/causeway.jpg",
+                alt: "The Johor-Singapore Causeway",
+                caption: "Johor-Singapore Causeway",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Which of the following shipping lanes has historically recorded the highest concentration of modern pirate attacks, earning a reputation as one of the world's most dangerous maritime choke points?",
+          image: {
+            src: "images/piracy.jpeg",
+            alt: "Pirates approaching a ship",
+          },
+          choices: {
+            a: "The English Channel",
+            b: "The Strait of Malacca",
+            c: "The Panama Canal",
+            d: "The Strait of Gibraltar",
+          },
+          answer: "b",
+          category: "Geography",
+          reveal: {
+            explanation:
+              "Did you know? Unlike modern Somali piracy—which focuses on high-stakes hostage-taking and multi-million dollar ransoms—pirates in the **Strait of Malacca** practice stealth theft. They use small, unlit wooden speedboats to sneak onto slow cargo ships at 2:00 AM, rapidly strip high-value engine parts, scrap metal, or crew valuables, and vanish back into the darkness within minutes.",
+            images: [
+              {
+                image: "images/maritimepolice.webp",
+                alt: "Maritime police patrolling the Strait of Malacca",
+                caption: "Maritime police",
+              },
+            ],
+          },
+        },
+        {
+          question: "What is this??? 🦁🐟",
+          image: {
+            src: "images/merlion.jpeg",
+            alt: "A statue of a creature with a lion's head and a fish's body spouting water",
+          },
+          choices: {
+            a: "A corporate cat that drank way too much water at the office cooler.",
+            b: "The Merlion, national mascot of Singapore",
+            c: "A majestic lion that forgot how to swim and is now desperately coughing up the sea.",
+            d: "Evidence of what happens when a lion and a goldfish try to share a studio apartment.",
+          },
+          answer: "b",
+          category: "Culture, Food & Sports",
+          reveal: {
+            explanation:
+              "The **Merlion** is the official national symbol and mascot of Singapore, featuring the head of a lion and the body of a fish.",
+            images: [
+              {
+                image: "images/merlion2.webp",
+                alt: "The Merlion statue in Singapore",
+                caption: "The Merlion",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            'If a Malaysian friend says, "Can, lah!", "Don\'t like that, lah!", and "Aiyoyo, finished already, lah!" all in one minute, what is the true superpower of the word "lah"?',
+          choices: {
+            a: "It translates directly to a mandatory punctuation mark in official government tax forms.",
+            b: "It is a secret security code used exclusively to order teh tarik at 3 AM.",
+            c: "It is an emotional Swiss Army knife that can soften commands, express exasperation, or add casual warmth to any sentence.",
+            d: "It mathematically multiplies the sentence's volume by exactly two decibels.",
+          },
+          answer: "c",
+          category: "Culture, Food & Sports",
+          reveal: {
+            images: [
+              {
+                image: "images/lah.jpeg",
+                alt: "An illustration of the Malaysian word lah",
+                caption: "Lah",
+                portrait: true,
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Which of these ingredients is typically NOT found in the traditional spicy sambal served with Nasi Lemak?",
+          choices: {
+            a: "Dried red chillies",
+            b: "Shallots",
+            c: "Penne pasta",
+            d: "Belacan (prawn paste)",
+          },
+          answer: "c",
+          category: "Culture, Food & Sports",
+          reveal: {
+            explanation:
+              "Pasta is an Italian wheat product and has no place in a traditional Malaysian chili sambal.",
+            images: [
+              {
+                image: "images/nasilemak.jpeg",
+                alt: "A plate of Malaysian Nasi Lemak",
+                caption: "Nasi Lemak",
+                portrait: true,
+              },
+            ],
+          },
+        },
+        {
+          question:
+            "Chinese New Year is celebrated extensively by the Chinese communities in Malaysia and Singapore. On the very first day of this 15-day festival period, what traditional gift do children eagerly receive from their parents and married relatives?",
+          choices: {
+            a: "Round mandarin oranges, to carry around in their pockets for all 15 days to guarantee good health.",
+            b: "A brand new set of traditional jade jewelry, to protect them from bad luck throughout the upcoming lunar year.",
+            c: "Red packets filled with money (known locally as Ang Pow or Hongbao), wishing them good fortune, health, and luck.",
+            d: "Homemade sweet nian gao (sticky rice cakes), which they must finish eating before noon to ensure high grades at school.",
+          },
+          answer: "c",
+          category: "Culture, Food & Sports",
+          reveal: {
+            explanation:
+              "On the first morning of Chinese New Year, children greet their parents and married elders with auspicious wishes and are traditionally gifted *red packets* (Ang pao) containing monetary blessings.",
+            images: [
+              {
+                image: "images/angpao.jpeg",
+                alt: "Red Ang Pao packets for Chinese New Year",
+                caption: "Ang Pao",
+              },
+            ],
+          },
+        },
       ];
 
       const app = document.getElementById("app");
@@ -827,11 +1422,26 @@
         );
 
       function renderStart() {
+        const categories = [
+          ...new Set(QUESTIONS.map((q) => q.category)),
+        ].filter(Boolean);
         app.innerHTML = `
-                         <h1>Malaysia &amp; Singapore Quiz</h1>
-                         <p>${total} questions, one per page.</p>
-                         <a class="btn" href="#/q/1">Start</a>`;
+                          <h1>Malaysia &amp; Singapore Quiz</h1>
+                          <p>${total} questions, one per page.</p>
+                          <a class="btn" href="#/q/1">Start</a>
+                          <h2 class="random-title">Or get a random question from a category</h2>
+                          <div class="categories">
+                            ${categories.map((c, i) => `<button type="button" class="btn secondary" data-color="${["red", "green", "yellow", "blue"][i % 4]}" data-category="${esc(c)}">${esc(c)} (${QUESTIONS.filter((q) => q.category === c).length})</button>`).join("")}
+                          </div>`;
         document.title = "Malaysia & Singapore Quiz";
+        document.querySelector(".categories").addEventListener("click", (e) => {
+          const button = e.target.closest("button");
+          if (!button) return;
+          const matches = QUESTIONS.map((q, i) =>
+            q.category === button.dataset.category ? i + 1 : 0,
+          ).filter(Boolean);
+          location.hash = `#/q/${matches[Math.floor(Math.random() * matches.length)]}`;
+        });
       }
 
       function renderChoices(choices) {
@@ -843,32 +1453,60 @@
           )
           .join("");
         return `<ul class="choices" aria-label="Answer choices">${items}</ul>
-                <p id="feedback" class="feedback" role="status"></p>`;
+                 <p id="feedback" class="feedback" role="status"></p>`;
+      }
+
+      // Wraps the answer in **bold** markers wherever it appears in the explanation.
+      function boldAnswer(text, answers) {
+        const candidates = answers
+          .flatMap((a) => {
+            const full = String(a);
+            const short = full.replace(/\s*\(.*?\)/g, "").split(" - ")[0];
+            return [full, short, short.replace(/^the\s+/i, "")];
+          })
+          .map((a) => a.trim())
+          .filter((a, i, all) => a.length >= 3 && all.indexOf(a) === i)
+          .sort((x, y) => y.length - x.length);
+        if (!candidates.length) return text;
+        const escaped = candidates.map((a) =>
+          a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        );
+        const pattern = new RegExp(
+          `(?<![\\w])(?:${escaped.join("|")})(?![\\w])`,
+          "gi",
+        );
+        return text
+          .split(/(\*\*.+?\*\*)/)
+          .map((part) =>
+            part.startsWith("**") ? part : part.replace(pattern, "**$&**"),
+          )
+          .join("");
       }
 
       function renderReveal(n) {
         const { choices, answer, reveal } = QUESTIONS[n - 1];
         const isLast = n === total;
         app.innerHTML = `
-                         <p class="count">Question ${n} of ${total}</p>
-                         <h1 class="correct-title">${choices ? "Correct!" : "Answer"}</h1>
-                         <p>The answer is ${esc(choices ? `${answer.toUpperCase()}: ${choices[answer]}` : [answer].flat()[0])}</p>
-                         <div class="reveal">
-                           ${reveal.images
-                             .map(
-                               ({ image, alt, caption, portrait, large }) => `
-                           <figure class="${[portrait && "portrait", large && "large"].filter(Boolean).join(" ")}">
-                             <img src="${esc(image)}" alt="${esc(alt)}" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
-                             <p class="missing" hidden>Add the photo at ${esc(image)} to show it here.</p>
-                             <figcaption>${esc(caption)}</figcaption>
-                           </figure>`,
-                             )
-                             .join("")}
-                         </div>
-                         <div class="nav">
-                           <a class="btn secondary" href="#/q/${n}">Back to question</a>
-                           ${isLast ? `<a class="btn" href="#/">Done</a>` : `<a class="btn" href="#/q/${n + 1}">Next</a>`}
-                         </div>`;
+                          <p class="count"><span>Question ${n} of ${total}</span><span>${esc(QUESTIONS[n - 1].category ?? "")}</span></p>
+                          <h1 class="correct-title">${esc(choices ? answer.toUpperCase() : String(matchedAnswers[n] ?? [answer].flat()[0]))} is Correct${reveal.ending ?? "!"}</h1>
+                          ${reveal.explanation ? `<p class="explanation">${esc(boldAnswer(reveal.explanation, choices ? [choices[answer]] : [answer].flat())).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")}</p>` : ""}
+                          ${reveal.details ? `<ul class="details">${reveal.details.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>` : ""}
+                          <div class="reveal">
+                            ${reveal.images
+                              .map(
+                                ({ image, alt, caption, portrait, large }) => `
+                            <figure class="${[portrait && "portrait", large && "large"].filter(Boolean).join(" ")}">
+                              <img src="${esc(image)}" alt="${esc(alt)}" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+                              <p class="missing" hidden>Add the photo at ${esc(image)} to show it here.</p>
+                              <figcaption>${esc(caption)}</figcaption>
+                            </figure>`,
+                              )
+                              .join("")}
+                          </div>
+                          <div class="nav">
+                            <a class="btn secondary" href="#/q/${n}">Back to question</a>
+                            ${isLast ? `<a class="btn" href="#/">Done</a>` : `<a class="btn" href="#/q/${n + 1}">Next</a>`}
+                          </div>`;
         document.title = `Question ${n} answer`;
       }
 
@@ -890,23 +1528,33 @@
           } else {
             button.disabled = true;
             button.classList.add("wrong");
+            const note = QUESTIONS[n - 1].notes?.[letter];
+            if (note) {
+              const el = document.createElement("small");
+              el.className = "note";
+              el.textContent = note;
+              button.append(el);
+            }
             feedback.className = "feedback wrong";
             feedback.textContent = "Not quite - try again.";
           }
         });
       }
 
-      const normalize = (s) => s.trim().toLowerCase().replace(/\s+/g, " ");
+      const matchedAnswers = {};
+
+      const normalize = (s) =>
+        String(s).trim().toLowerCase().replace(/\s+/g, " ");
 
       function renderAnswerForm() {
         return `<form id="answer-form" class="answer-form">
-                           <label for="answer-input">Your answer</label>
-                           <div class="answer-row">
-                             <input id="answer-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
-                             <button type="submit" class="btn">Check</button>
-                           </div>
-                         </form>
-                         <p id="feedback" class="feedback" role="status"></p>`;
+                            <label for="answer-input">Your answer</label>
+                            <div class="answer-row">
+                              <input id="answer-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+                              <button type="submit" class="btn">Check</button>
+                            </div>
+                          </form>
+                          <p id="feedback" class="feedback" role="status"></p>`;
       }
 
       function wireAnswerForm(n, answers, reveal) {
@@ -918,7 +1566,9 @@
           e.preventDefault();
           const value = normalize(input.value);
           if (!value) return;
-          if (answers.some((a) => normalize(a) === value)) {
+          const matched = answers.find((a) => normalize(a) === value);
+          if (matched !== undefined) {
+            matchedAnswers[n] = matched;
             if (reveal) {
               location.hash = `#/q/${n}/answer`;
               return;
@@ -939,19 +1589,19 @@
         const isLast = n === total;
         const { question, choices, answer, reveal, image } = QUESTIONS[n - 1];
         app.innerHTML = `
-                         <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="${total}" aria-valuenow="${n}">
-                           <div style="width:${(n / total) * 100}%"></div>
-                         </div>
-                         <p class="count">Question ${n} of ${total}</p>
-                         <h1>${esc(question)}</h1>
-                         ${image ? `<img class="question-image" src="${esc(image.src)}" alt="${esc(image.alt)}">` : ""}
-                         ${renderChoices(choices)}
-                         ${Array.isArray(answer) ? renderAnswerForm() : ""}
-                         ${reveal && !choices ? `<a class="btn show-answer" href="#/q/${n}/answer">Show answer</a>` : ""}
-                         <div class="nav">
-                           <a class="btn secondary" href="${n > 1 ? `#/q/${n - 1}` : "#/"}">${n > 1 ? "Back" : "Home"}</a>
-                           ${isLast ? `<a class="btn" href="#/">Done</a>` : `<a class="btn" href="#/q/${n + 1}">Next</a>`}
-                         </div>`;
+                          <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="${total}" aria-valuenow="${n}">
+                            <div style="width:${(n / total) * 100}%"></div>
+                          </div>
+                          <p class="count"><span>Question ${n} of ${total}</span><span>${esc(QUESTIONS[n - 1].category ?? "")}</span></p>
+                          <h1>${esc(question)}</h1>
+                          ${image ? `<img class="question-image" src="${esc(image.src)}" alt="${esc(image.alt)}">` : ""}
+                          ${renderChoices(choices)}
+                          ${Array.isArray(answer) ? renderAnswerForm() : ""}
+                          ${reveal && !choices ? `<a class="btn show-answer" href="#/q/${n}/answer">Show answer</a>` : ""}
+                          <div class="nav">
+                            <a class="btn secondary" href="${n > 1 ? `#/q/${n - 1}` : "#/"}">${n > 1 ? "Back" : "Home"}</a>
+                            ${isLast ? `<a class="btn" href="#/">Done</a>` : `<a class="btn" href="#/q/${n + 1}">Next</a>`}
+                          </div>`;
         document.title = `Question ${n} of ${total}`;
         wireChoices(n, choices, answer, reveal);
         if (Array.isArray(answer)) wireAnswerForm(n, answer, reveal);
@@ -959,12 +1609,23 @@
 
       function route() {
         const revealMatch = location.hash.match(/^#\/q\/(\d+)\/answer$/);
-        if (revealMatch && QUESTIONS[+revealMatch[1] - 1]?.reveal)
-          return renderReveal(+revealMatch[1]);
+        if (revealMatch && QUESTIONS[+revealMatch[1] - 1]?.reveal) {
+          renderReveal(+revealMatch[1]);
+          return addHomeLink();
+        }
         const match = location.hash.match(/^#\/q\/(\d+)$/);
-        if (match && +match[1] >= 1 && +match[1] <= total)
-          return renderQuestion(+match[1]);
+        if (match && +match[1] >= 1 && +match[1] <= total) {
+          renderQuestion(+match[1]);
+          return addHomeLink();
+        }
         renderStart();
+      }
+
+      function addHomeLink() {
+        app.insertAdjacentHTML(
+          "afterbegin",
+          '<a class="home-link" href="#/">&larr; Home</a>',
+        );
       }
 
       document.addEventListener("keydown", (e) => {
@@ -974,6 +1635,43 @@
         if (!match) return;
         const next = +match[1] + (e.key === "ArrowRight" ? 1 : -1);
         if (next >= 1 && next <= total) location.hash = `#/q/${next}`;
+      });
+
+      const menuButton = document.getElementById("menu-button");
+      const menuPanel = document.getElementById("menu-panel");
+      document.getElementById("menu-list").innerHTML = QUESTIONS.map(
+        (q, i) =>
+          `<li><a href="#/q/${i + 1}"><span class="num">${i + 1}</span><span class="text">${esc(q.question.replace(/\s+/g, " "))}</span></a></li>`,
+      ).join("");
+
+      function setMenu(open) {
+        menuPanel.hidden = !open;
+        menuButton.setAttribute("aria-expanded", String(open));
+        if (!open) return;
+        const current = location.hash.match(/^#\/q\/(\d+)/)?.[1];
+        menuPanel.querySelectorAll("a").forEach((a) => {
+          if (a.getAttribute("href") === `#/q/${current}`)
+            a.setAttribute("aria-current", "page");
+          else a.removeAttribute("aria-current");
+        });
+        menuPanel
+          .querySelector("[aria-current]")
+          ?.scrollIntoView({ block: "center" });
+      }
+
+      menuButton.addEventListener("click", () => setMenu(menuPanel.hidden));
+      menuPanel.addEventListener("click", (e) => {
+        if (e.target.closest("a")) setMenu(false);
+      });
+      document.addEventListener("click", (e) => {
+        if (!menuPanel.hidden && !e.target.closest("#menu-panel, #menu-button"))
+          setMenu(false);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !menuPanel.hidden) {
+          setMenu(false);
+          menuButton.focus();
+        }
       });
 
       window.addEventListener("hashchange", route);
