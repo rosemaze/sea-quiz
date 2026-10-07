@@ -833,6 +833,8 @@
             d: "Hainanese chicken rice",
           },
           reveal: {
+            explanation:
+              "While Malaysia and Singapore intensely battle over who truly owns Beef Rendang, Nasi Lemak, and Hainanese Chicken Rice, Pad Thai is completely out of the fight as it belongs strictly and proudly to Thailand.",
             images: [
               {
                 image: "images/nasilemak.jpeg",
@@ -972,7 +974,7 @@
           category: "Culture, Food & Sports",
           reveal: {
             explanation:
-              "That's right! Diwali (Deepavali) is the correct answer. During this spectacular celebration, neighbourhoods like Little India in Singapore and Brickfields in Kuala Lumpur completely transform with millions of oil lamps and dazzling light displays.",
+              "During **Deepavali**, neighbourhoods like Little India in Singapore and Brickfields in Kuala Lumpur completely transform with millions of oil lamps and dazzling light displays.",
             images: [
               {
                 image: "images/deepavali.jpeg",
@@ -998,11 +1000,15 @@
           answer: "c",
           category: "Culture, Food & Sports",
           reveal: {
+            explanation:
+              "The **Petronas Twin Towers** in Kuala Lumpur is the highest twin towers in the world.",
             images: [
               {
-                image: "images/towerscomparison.jpg",
+                image: "images/petronascomparison.png",
                 alt: "A height comparison of the Petronas Twin Towers with other towers",
                 caption: "Petronas Twin Towers height comparison",
+                portrait: true,
+                large: true,
               },
             ],
           },
@@ -1116,9 +1122,9 @@
           reveal: {
             details: [
               "Pearly Tan / M. Thinaah: Current World no. 5 (highest ranking no. 2)",
-              "Aaron Chia / Soh Wooi Yik: Current World no. 4 (highest ranking no. 1)",
-              "Chen Tang Jie / Toh Ee Wei: World No. 8 (highest ranking no. 3)",
-              "Goh Soon Huat / Shevon Jemie Lai: World No. 11",
+              "Aaron Chia / Soh Wooi Yik: Current World no. 4 (highest ranking no. 2)",
+              "Chen Tang Jie / Toh Ee Wei: Current World No. 8 (highest ranking no. 3)",
+              "**Goh Soon Huat / Shevon Jemie Lai: Current World No. 11**",
             ],
             images: [
               {
@@ -1158,7 +1164,7 @@
           },
         },
         {
-          question: "What is this animal?!!",
+          question: "What is this animal?!! 🤔",
           image: {
             src: "images/tapir.jpeg",
             alt: "A black and white animal with a long flexible snout",
@@ -1287,7 +1293,7 @@
         },
         {
           question:
-            "Which of the following shipping lanes has historically recorded the highest concentration of modern pirate attacks, earning a reputation as one of the world's most dangerous maritime choke points?",
+            "🏴‍☠️ Which of the following shipping lanes has historically recorded the highest concentration of modern pirate attacks, earning a reputation as one of the world's most dangerous maritime choke points?",
           image: {
             src: "images/piracy.jpeg",
             alt: "Pirates approaching a ship",
@@ -1407,6 +1413,51 @@
             ],
           },
         },
+        {
+          question: "What is the capital of Malaysia?",
+          choices: {
+            a: "Johor Bahru",
+            b: "Kuala Lumpur",
+            c: "George Town",
+            d: "Kota Kinabalu",
+          },
+          answer: "b",
+          category: "Geography",
+          reveal: {
+            explanation:
+              "Kuala Lumpur is the capital of Malaysia, with a population of 2 million and 9 million including its broader metropolitan area.",
+            images: [
+              {
+                image: "images/kualalumpur.avif",
+                alt: "The Kuala Lumpur skyline",
+                caption: "Kuala Lumpur",
+              },
+            ],
+          },
+        },
+        {
+          question:
+            'What is the Malaysian/Singaporean multi-purpose word used daily to mean "Hey," "Please," "Thank you," "Excuse me," or "Can I get a discount?"',
+          choices: {
+            a: "Lah",
+            b: "Boss",
+            c: "Walao",
+            d: "Can",
+          },
+          answer: "b",
+          category: "Culture, Food & Sports",
+          reveal: {
+            explanation:
+              'In Malaysia and Singapore, anyone from a taxi driver and a food stall operator to a complete stranger is addressed as "Boss." You can use "Boss" as a polite form of address for a service worker at a hawker center or in a shop. It is the ultimate social lubricant to get you faster service, cheaper prices, and instant friendship!',
+            images: [
+              {
+                image: "images/boss.png",
+                alt: "Calling someone Boss in Malaysia",
+                caption: "Boss",
+              },
+            ],
+          },
+        },
       ];
 
       const app = document.getElementById("app");
@@ -1459,6 +1510,10 @@
                  <p id="feedback" class="feedback" role="status"></p>`;
       }
 
+      // Turns **bold** markers in already-escaped text into <strong> tags.
+      const renderBold = (html) =>
+        html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+
       // Wraps the answer in **bold** markers wherever it appears in the explanation.
       function boldAnswer(text, answers) {
         const candidates = answers
@@ -1492,8 +1547,8 @@
         app.innerHTML = `
                           <p class="count"><span>Question ${n} of ${total}</span><span>${esc(QUESTIONS[n - 1].category ?? "")}</span></p>
                           <h1 class="correct-title">${esc(choices ? answer.toUpperCase() : String(matchedAnswers[n] ?? [answer].flat()[0]))} is Correct${reveal.ending ?? "!"}</h1>
-                          ${reveal.explanation ? `<p class="explanation">${esc(boldAnswer(reveal.explanation, choices ? [choices[answer]] : [answer].flat())).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")}</p>` : ""}
-                          ${reveal.details ? `<ul class="details">${reveal.details.map((d) => `<li>${esc(d)}</li>`).join("")}</ul>` : ""}
+                          ${reveal.explanation ? `<p class="explanation">${renderBold(esc(boldAnswer(reveal.explanation, choices ? [choices[answer]] : [answer].flat())))}</p>` : ""}
+                          ${reveal.details ? `<ul class="details">${reveal.details.map((d) => `<li>${renderBold(esc(d))}</li>`).join("")}</ul>` : ""}
                           <div class="reveal">
                             ${reveal.images
                               .map(
